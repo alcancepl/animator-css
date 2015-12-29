@@ -152,13 +152,15 @@ export class CssAnimator {
     let styleSheets = document.styleSheets;
     for (let i = 0; i < styleSheets.length; ++i) {
       let cssRules = styleSheets[i].cssRules;
+	
+      if (cssRules) {
+        for (let j = 0; j < cssRules.length; ++j) {
+          let cssRule = cssRules[j];
 
-      for (let j = 0; j < cssRules.length; ++j) {
-        let cssRule = cssRules[j];
-
-        if (cssRule.type === keyframesRuleType) {
-          if (newAnimationNames.indexOf(cssRule.name) !== -1) {
-            return true;
+          if (cssRule.type === keyframesRuleType) {
+            if (newAnimationNames.indexOf(cssRule.name) !== -1) {
+              return true;
+            }
           }
         }
       }

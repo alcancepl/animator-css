@@ -108,12 +108,14 @@ define(['exports', 'aurelia-templating', 'aurelia-pal'], function (exports, _aur
       for (var i = 0; i < styleSheets.length; ++i) {
         var cssRules = styleSheets[i].cssRules;
 
-        for (var j = 0; j < cssRules.length; ++j) {
-          var cssRule = cssRules[j];
+        if (cssRules) {
+          for (var j = 0; j < cssRules.length; ++j) {
+            var cssRule = cssRules[j];
 
-          if (cssRule.type === keyframesRuleType) {
-            if (newAnimationNames.indexOf(cssRule.name) !== -1) {
-              return true;
+            if (cssRule.type === keyframesRuleType) {
+              if (newAnimationNames.indexOf(cssRule.name) !== -1) {
+                return true;
+              }
             }
           }
         }

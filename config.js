@@ -1,19 +1,21 @@
 System.config({
-  defaultJSExtensions: true,
-  transpiler: "babel",
-  babelOptions: {
+  "defaultJSExtensions": true,
+  "transpiler": "babel",
+  "babelOptions": {
     "optional": [
       "runtime",
       "es7.decorators"
     ]
   },
-  paths: {
+  "paths": {
     "aurelia-animator-css/*": "dist\\system/*.js",
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
-  },
+  }
+});
 
-  map: {
+System.config({
+  "map": {
     "aurelia-metadata": "npm:aurelia-metadata@1.0.0-beta.1",
     "aurelia-pal": "npm:aurelia-pal@1.0.0-beta.1.0.1",
     "aurelia-pal-browser": "npm:aurelia-pal-browser@1.0.0-beta.1.0.1",
