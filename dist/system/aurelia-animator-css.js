@@ -1,480 +1,488 @@
 System.register(['aurelia-templating', 'aurelia-pal'], function (_export) {
-  'use strict';
-
-  var animationEvent, TemplatingEngine, DOM, CssAnimator;
-
-  _export('configure', configure);
-
-  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-  function configure(config, callback) {
-    var animator = config.container.get(CssAnimator);
-    config.container.get(TemplatingEngine).configureAnimator(animator);
-    if (typeof callback === 'function') {
-      callback(animator);
-    }
-  }
-
-  return {
-    setters: [function (_aureliaTemplating) {
-      animationEvent = _aureliaTemplating.animationEvent;
-      TemplatingEngine = _aureliaTemplating.TemplatingEngine;
-    }, function (_aureliaPal) {
-      DOM = _aureliaPal.DOM;
-    }],
-    execute: function () {
-      CssAnimator = (function () {
-        function CssAnimator() {
-          _classCallCheck(this, CssAnimator);
-
-          this.useAnimationDoneClasses = false;
-          this.animationEnteredClass = 'au-entered';
-          this.animationLeftClass = 'au-left';
-          this.isAnimating = false;
-
-          this.verifyKeyframesExist = true;
-        }
-
-        CssAnimator.prototype._addMultipleEventListener = function _addMultipleEventListener(el, s, fn) {
-          var evts = s.split(' ');
-          for (var i = 0, ii = evts.length; i < ii; ++i) {
-            el.addEventListener(evts[i], fn, false);
-          }
-        };
-
-        CssAnimator.prototype._getElementAnimationDelay = function _getElementAnimationDelay(element) {
-          var styl = DOM.getComputedStyle(element);
-          var prop = undefined;
-          var delay = undefined;
-
-          if (styl.getPropertyValue('animation-delay')) {
-            prop = 'animation-delay';
-          } else if (styl.getPropertyValue('-webkit-animation-delay')) {
-            prop = '-webkit-animation-delay';
-          } else if (styl.getPropertyValue('-moz-animation-delay')) {
-            prop = '-moz-animation-delay';
-          } else {
-            return 0;
-          }
-
-          delay = styl.getPropertyValue(prop);
-          delay = Number(delay.replace(/[^\d\.]/g, ''));
-
-          return delay * 1000;
-        };
-
-        CssAnimator.prototype._getElementAnimationNames = function _getElementAnimationNames(element) {
-          var styl = DOM.getComputedStyle(element);
-          var prefix = undefined;
-
-          if (styl.getPropertyValue('animation-name')) {
-            prefix = '';
-          } else if (styl.getPropertyValue('-webkit-animation-name')) {
-            prefix = '-webkit-';
-          } else if (styl.getPropertyValue('-moz-animation-name')) {
-            prefix = '-moz-';
-          } else {
-            return [];
-          }
-
-          var animationNames = styl.getPropertyValue(prefix + 'animation-name');
-          return animationNames ? animationNames.split(' ') : [];
-        };
-
-        CssAnimator.prototype._performSingleAnimate = function _performSingleAnimate(element, className) {
-          var _this = this;
-
-          this._triggerDOMEvent(animationEvent.animateBegin, element);
-
-          return this.addClass(element, className, true).then(function (result) {
-            _this._triggerDOMEvent(animationEvent.animateActive, element);
-
-            if (result !== false) {
-              return _this.removeClass(element, className, true).then(function () {
-                _this._triggerDOMEvent(animationEvent.animateDone, element);
-              });
-            }
-
-            return false;
-          })['catch'](function () {
-            _this._triggerDOMEvent(animationEvent.animateTimeout, element);
-          });
-        };
-
-        CssAnimator.prototype._triggerDOMEvent = function _triggerDOMEvent(eventType, element) {
-          var evt = DOM.createCustomEvent(eventType, { bubbles: true, cancelable: true, detail: element });
-          DOM.dispatchEvent(evt);
-        };
+	'use strict';
+
+	var animationEvent, TemplatingEngine, DOM, CssAnimator;
+
+	_export('configure', configure);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function configure(config, callback) {
+		var animator = config.container.get(CssAnimator);
+		config.container.get(TemplatingEngine).configureAnimator(animator);
+		if (typeof callback === 'function') {
+			callback(animator);
+		}
+	}
+
+	return {
+		setters: [function (_aureliaTemplating) {
+			animationEvent = _aureliaTemplating.animationEvent;
+			TemplatingEngine = _aureliaTemplating.TemplatingEngine;
+		}, function (_aureliaPal) {
+			DOM = _aureliaPal.DOM;
+		}],
+		execute: function () {
+			CssAnimator = (function () {
+				function CssAnimator() {
+					_classCallCheck(this, CssAnimator);
+
+					this.useAnimationDoneClasses = false;
+					this.animationEnteredClass = 'au-entered';
+					this.animationLeftClass = 'au-left';
+					this.isAnimating = false;
+
+					this.verifyKeyframesExist = true;
+				}
+
+				CssAnimator.prototype._addMultipleEventListener = function _addMultipleEventListener(el, s, fn) {
+					var evts = s.split(' ');
+					for (var i = 0, ii = evts.length; i < ii; ++i) {
+						el.addEventListener(evts[i], fn, false);
+					}
+				};
+
+				CssAnimator.prototype._getElementAnimationDelay = function _getElementAnimationDelay(element) {
+					var styl = DOM.getComputedStyle(element);
+					var prop = undefined;
+					var delay = undefined;
+
+					if (styl.getPropertyValue('animation-delay')) {
+						prop = 'animation-delay';
+					} else if (styl.getPropertyValue('-webkit-animation-delay')) {
+						prop = '-webkit-animation-delay';
+					} else if (styl.getPropertyValue('-moz-animation-delay')) {
+						prop = '-moz-animation-delay';
+					} else {
+						return 0;
+					}
+
+					delay = styl.getPropertyValue(prop);
+					delay = Number(delay.replace(/[^\d\.]/g, ''));
+
+					return delay * 1000;
+				};
+
+				CssAnimator.prototype._getElementAnimationNames = function _getElementAnimationNames(element) {
+					var styl = DOM.getComputedStyle(element);
+					var prefix = undefined;
+
+					if (styl.getPropertyValue('animation-name')) {
+						prefix = '';
+					} else if (styl.getPropertyValue('-webkit-animation-name')) {
+						prefix = '-webkit-';
+					} else if (styl.getPropertyValue('-moz-animation-name')) {
+						prefix = '-moz-';
+					} else {
+						return [];
+					}
+
+					var animationNames = styl.getPropertyValue(prefix + 'animation-name');
+					return animationNames ? animationNames.split(' ') : [];
+				};
+
+				CssAnimator.prototype._performSingleAnimate = function _performSingleAnimate(element, className) {
+					var _this = this;
+
+					this._triggerDOMEvent(animationEvent.animateBegin, element);
+
+					return this.addClass(element, className, true).then(function (result) {
+						_this._triggerDOMEvent(animationEvent.animateActive, element);
+
+						if (result !== false) {
+							return _this.removeClass(element, className, true).then(function () {
+								_this._triggerDOMEvent(animationEvent.animateDone, element);
+							});
+						}
+
+						return false;
+					})['catch'](function () {
+						_this._triggerDOMEvent(animationEvent.animateTimeout, element);
+					});
+				};
+
+				CssAnimator.prototype._triggerDOMEvent = function _triggerDOMEvent(eventType, element) {
+					var evt = DOM.createCustomEvent(eventType, { bubbles: true, cancelable: true, detail: element });
+					DOM.dispatchEvent(evt);
+				};
+
+				CssAnimator.prototype._animationChangeWithValidKeyframe = function _animationChangeWithValidKeyframe(animationNames, prevAnimationNames) {
+					var newAnimationNames = animationNames.filter(function (name) {
+						return prevAnimationNames.indexOf(name) === -1;
+					});
+
+					if (newAnimationNames.length === 0) {
+						return false;
+					}
+
+					if (!this.verifyKeyframesExist) {
+						return true;
+					}
 
-        CssAnimator.prototype._animationChangeWithValidKeyframe = function _animationChangeWithValidKeyframe(animationNames, prevAnimationNames) {
-          var newAnimationNames = animationNames.filter(function (name) {
-            return prevAnimationNames.indexOf(name) === -1;
-          });
+					var keyframesRuleType = window.CSSRule.KEYFRAMES_RULE || window.CSSRule.MOZ_KEYFRAMES_RULE || window.CSSRule.WEBKIT_KEYFRAMES_RULE;
+
+					var styleSheets = document.styleSheets;
+					for (var i = 0; i < styleSheets.length; ++i) {
 
-          if (newAnimationNames.length === 0) {
-            return false;
-          }
+						var cssRules = null;
+						try {
+							cssRules = styleSheets[i].cssRules;
+						} catch (e) {
+							if (e.name !== "SecurityError") {
+								throw e;
+							}
+						}
 
-          if (!this.verifyKeyframesExist) {
-            return true;
-          }
+						if (cssRules) {
+							for (var j = 0; j < cssRules.length; ++j) {
+								var cssRule = cssRules[j];
+
+								if (cssRule.type === keyframesRuleType) {
+									if (newAnimationNames.indexOf(cssRule.name) !== -1) {
+										return true;
+									}
+								}
+							}
+						}
+					}
+
+					return false;
+				};
+
+				CssAnimator.prototype.animate = function animate(element, className) {
+					var _this2 = this;
+
+					if (Array.isArray(element)) {
+						return Promise.all(element.map(function (el) {
+							return _this2._performSingleAnimate(el, className);
+						}));
+					}
+
+					return this._performSingleAnimate(element, className);
+				};
+
+				CssAnimator.prototype.runSequence = function runSequence(animations) {
+					var _this3 = this;
+
+					this._triggerDOMEvent(animationEvent.sequenceBegin, null);
+
+					return animations.reduce(function (p, anim) {
+						return p.then(function () {
+							return _this3.animate(anim.element, anim.className);
+						});
+					}, Promise.resolve(true)).then(function () {
+						_this3._triggerDOMEvent(animationEvent.sequenceDone, null);
+					});
+				};
+
+				CssAnimator.prototype.enter = function enter(element) {
+					var _this4 = this;
+
+					return new Promise(function (resolve, reject) {
+						var classList = element.classList;
+
+						_this4._triggerDOMEvent(animationEvent.enterBegin, element);
+
+						if (_this4.useAnimationDoneClasses) {
+							classList.remove(_this4.animationEnteredClass);
+							classList.remove(_this4.animationLeftClass);
+						}
 
-          var keyframesRuleType = window.CSSRule.KEYFRAMES_RULE || window.CSSRule.MOZ_KEYFRAMES_RULE || window.CSSRule.WEBKIT_KEYFRAMES_RULE;
+						classList.add('au-enter');
+						var prevAnimationNames = _this4._getElementAnimationNames(element);
+
+						var animStart = undefined;
+						var animHasStarted = false;
+						_this4._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
+							animHasStarted = true;
+							_this4.isAnimating = true;
+
+							_this4._triggerDOMEvent(animationEvent.enterActive, element);
 
-          var styleSheets = document.styleSheets;
-          for (var i = 0; i < styleSheets.length; ++i) {
-            var cssRules = styleSheets[i].cssRules;
+							evAnimStart.stopPropagation();
 
-            if (cssRules) {
-              for (var j = 0; j < cssRules.length; ++j) {
-                var cssRule = cssRules[j];
+							evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
+						}, false);
 
-                if (cssRule.type === keyframesRuleType) {
-                  if (newAnimationNames.indexOf(cssRule.name) !== -1) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
+						var animEnd = undefined;
+						_this4._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
+							if (!animHasStarted) {
+								return;
+							}
 
-          return false;
-        };
+							evAnimEnd.stopPropagation();
 
-        CssAnimator.prototype.animate = function animate(element, className) {
-          var _this2 = this;
+							classList.remove('au-enter-active');
+							classList.remove('au-enter');
 
-          if (Array.isArray(element)) {
-            return Promise.all(element.map(function (el) {
-              return _this2._performSingleAnimate(el, className);
-            }));
-          }
-
-          return this._performSingleAnimate(element, className);
-        };
-
-        CssAnimator.prototype.runSequence = function runSequence(animations) {
-          var _this3 = this;
+							evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
 
-          this._triggerDOMEvent(animationEvent.sequenceBegin, null);
+							if (_this4.useAnimationDoneClasses && _this4.animationEnteredClass !== undefined && _this4.animationEnteredClass !== null) {
+								classList.add(_this4.animationEnteredClass);
+							}
+
+							_this4.isAnimating = false;
+							_this4._triggerDOMEvent(animationEvent.enterDone, element);
 
-          return animations.reduce(function (p, anim) {
-            return p.then(function () {
-              return _this3.animate(anim.element, anim.className);
-            });
-          }, Promise.resolve(true)).then(function () {
-            _this3._triggerDOMEvent(animationEvent.sequenceDone, null);
-          });
-        };
+							resolve(true);
+						}, false);
 
-        CssAnimator.prototype.enter = function enter(element) {
-          var _this4 = this;
-
-          return new Promise(function (resolve, reject) {
-            var classList = element.classList;
-
-            _this4._triggerDOMEvent(animationEvent.enterBegin, element);
+						var parent = element.parentElement;
+						var delay = 0;
 
-            if (_this4.useAnimationDoneClasses) {
-              classList.remove(_this4.animationEnteredClass);
-              classList.remove(_this4.animationLeftClass);
-            }
+						var cleanupAnimation = function cleanupAnimation() {
+							var animationNames = _this4._getElementAnimationNames(element);
+							if (!_this4._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
+								classList.remove('au-enter-active');
+								classList.remove('au-enter');
+								_this4._triggerDOMEvent(animationEvent.enterTimeout, element);
+								resolve(false);
+							}
+						};
+
+						if (parent !== null && parent !== undefined && (parent.classList.contains('au-stagger') || parent.classList.contains('au-stagger-enter'))) {
+							var elemPos = Array.prototype.indexOf.call(parent.childNodes, element);
+							delay = _this4._getElementAnimationDelay(parent) * elemPos;
+
+							_this4._triggerDOMEvent(animationEvent.staggerNext, element);
+
+							setTimeout(function () {
+								classList.add('au-enter-active');
+								cleanupAnimation();
+							}, delay);
+						} else {
+							classList.add('au-enter-active');
+							cleanupAnimation();
+						}
+					});
+				};
+
+				CssAnimator.prototype.leave = function leave(element) {
+					var _this5 = this;
 
-            classList.add('au-enter');
-            var prevAnimationNames = _this4._getElementAnimationNames(element);
+					return new Promise(function (resolve, reject) {
+						var classList = element.classList;
+
+						_this5._triggerDOMEvent(animationEvent.leaveBegin, element);
+
+						if (_this5.useAnimationDoneClasses) {
+							classList.remove(_this5.animationEnteredClass);
+							classList.remove(_this5.animationLeftClass);
+						}
+
+						classList.add('au-leave');
+						var prevAnimationNames = _this5._getElementAnimationNames(element);
+
+						var animStart = undefined;
+						var animHasStarted = false;
+						_this5._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
+							animHasStarted = true;
+							_this5.isAnimating = true;
+
+							_this5._triggerDOMEvent(animationEvent.leaveActive, element);
+
+							evAnimStart.stopPropagation();
 
-            var animStart = undefined;
-            var animHasStarted = false;
-            _this4._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
-              animHasStarted = true;
-              _this4.isAnimating = true;
+							evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
+						}, false);
 
-              _this4._triggerDOMEvent(animationEvent.enterActive, element);
+						var animEnd = undefined;
+						_this5._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
+							if (!animHasStarted) {
+								return;
+							}
 
-              evAnimStart.stopPropagation();
+							evAnimEnd.stopPropagation();
 
-              evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
-            }, false);
+							classList.remove('au-leave-active');
+							classList.remove('au-leave');
 
-            var animEnd = undefined;
-            _this4._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
-              if (!animHasStarted) {
-                return;
-              }
+							evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
 
-              evAnimEnd.stopPropagation();
+							if (_this5.useAnimationDoneClasses && _this5.animationLeftClass !== undefined && _this5.animationLeftClass !== null) {
+								classList.add(_this5.animationLeftClass);
+							}
 
-              classList.remove('au-enter-active');
-              classList.remove('au-enter');
+							_this5.isAnimating = false;
+							_this5._triggerDOMEvent(animationEvent.leaveDone, element);
 
-              evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
+							resolve(true);
+						}, false);
 
-              if (_this4.useAnimationDoneClasses && _this4.animationEnteredClass !== undefined && _this4.animationEnteredClass !== null) {
-                classList.add(_this4.animationEnteredClass);
-              }
+						var parent = element.parentElement;
+						var delay = 0;
 
-              _this4.isAnimating = false;
-              _this4._triggerDOMEvent(animationEvent.enterDone, element);
+						var cleanupAnimation = function cleanupAnimation() {
+							var animationNames = _this5._getElementAnimationNames(element);
+							if (!_this5._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
+								classList.remove('au-leave-active');
+								classList.remove('au-leave');
+								_this5._triggerDOMEvent(animationEvent.leaveTimeout, element);
+								resolve(false);
+							}
+						};
 
-              resolve(true);
-            }, false);
+						if (parent !== null && parent !== undefined && (parent.classList.contains('au-stagger') || parent.classList.contains('au-stagger-leave'))) {
+							var elemPos = Array.prototype.indexOf.call(parent.childNodes, element);
+							delay = _this5._getElementAnimationDelay(parent) * elemPos;
 
-            var parent = element.parentElement;
-            var delay = 0;
+							_this5._triggerDOMEvent(animationEvent.staggerNext, element);
 
-            var cleanupAnimation = function cleanupAnimation() {
-              var animationNames = _this4._getElementAnimationNames(element);
-              if (!_this4._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
-                classList.remove('au-enter-active');
-                classList.remove('au-enter');
-                _this4._triggerDOMEvent(animationEvent.enterTimeout, element);
-                resolve(false);
-              }
-            };
+							setTimeout(function () {
+								classList.add('au-leave-active');
+								cleanupAnimation();
+							}, delay);
+						} else {
+							classList.add('au-leave-active');
+							cleanupAnimation();
+						}
+					});
+				};
 
-            if (parent !== null && parent !== undefined && (parent.classList.contains('au-stagger') || parent.classList.contains('au-stagger-enter'))) {
-              var elemPos = Array.prototype.indexOf.call(parent.childNodes, element);
-              delay = _this4._getElementAnimationDelay(parent) * elemPos;
+				CssAnimator.prototype.removeClass = function removeClass(element, className) {
+					var _this6 = this;
 
-              _this4._triggerDOMEvent(animationEvent.staggerNext, element);
+					var suppressEvents = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
-              setTimeout(function () {
-                classList.add('au-enter-active');
-                cleanupAnimation();
-              }, delay);
-            } else {
-              classList.add('au-enter-active');
-              cleanupAnimation();
-            }
-          });
-        };
+					return new Promise(function (resolve, reject) {
+						var classList = element.classList;
 
-        CssAnimator.prototype.leave = function leave(element) {
-          var _this5 = this;
+						if (!classList.contains(className) && !classList.contains(className + '-add')) {
+							resolve(false);
+							return;
+						}
 
-          return new Promise(function (resolve, reject) {
-            var classList = element.classList;
+						if (suppressEvents !== true) {
+							_this6._triggerDOMEvent(animationEvent.removeClassBegin, element);
+						}
 
-            _this5._triggerDOMEvent(animationEvent.leaveBegin, element);
-
-            if (_this5.useAnimationDoneClasses) {
-              classList.remove(_this5.animationEnteredClass);
-              classList.remove(_this5.animationLeftClass);
-            }
+						classList.remove(className);
+						var prevAnimationNames = _this6._getElementAnimationNames(element);
 
-            classList.add('au-leave');
-            var prevAnimationNames = _this5._getElementAnimationNames(element);
+						var animStart = undefined;
+						var animHasStarted = false;
+						_this6._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
+							animHasStarted = true;
+							_this6.isAnimating = true;
 
-            var animStart = undefined;
-            var animHasStarted = false;
-            _this5._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
-              animHasStarted = true;
-              _this5.isAnimating = true;
+							if (suppressEvents !== true) {
+								_this6._triggerDOMEvent(animationEvent.removeClassActive, element);
+							}
 
-              _this5._triggerDOMEvent(animationEvent.leaveActive, element);
+							evAnimStart.stopPropagation();
 
-              evAnimStart.stopPropagation();
+							evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
+						}, false);
 
-              evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
-            }, false);
+						var animEnd = undefined;
+						_this6._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
+							if (!animHasStarted) {
+								return;
+							}
 
-            var animEnd = undefined;
-            _this5._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
-              if (!animHasStarted) {
-                return;
-              }
+							evAnimEnd.stopPropagation();
 
-              evAnimEnd.stopPropagation();
+							classList.remove(className + '-remove');
 
-              classList.remove('au-leave-active');
-              classList.remove('au-leave');
+							evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
 
-              evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
+							_this6.isAnimating = false;
 
-              if (_this5.useAnimationDoneClasses && _this5.animationLeftClass !== undefined && _this5.animationLeftClass !== null) {
-                classList.add(_this5.animationLeftClass);
-              }
+							if (suppressEvents !== true) {
+								_this6._triggerDOMEvent(animationEvent.removeClassDone, element);
+							}
 
-              _this5.isAnimating = false;
-              _this5._triggerDOMEvent(animationEvent.leaveDone, element);
+							resolve(true);
+						}, false);
 
-              resolve(true);
-            }, false);
+						classList.add(className + '-remove');
 
-            var parent = element.parentElement;
-            var delay = 0;
+						var animationNames = _this6._getElementAnimationNames(element);
+						if (!_this6._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
+							classList.remove(className + '-remove');
+							classList.remove(className);
 
-            var cleanupAnimation = function cleanupAnimation() {
-              var animationNames = _this5._getElementAnimationNames(element);
-              if (!_this5._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
-                classList.remove('au-leave-active');
-                classList.remove('au-leave');
-                _this5._triggerDOMEvent(animationEvent.leaveTimeout, element);
-                resolve(false);
-              }
-            };
+							if (suppressEvents !== true) {
+								_this6._triggerDOMEvent(animationEvent.removeClassTimeout, element);
+							}
 
-            if (parent !== null && parent !== undefined && (parent.classList.contains('au-stagger') || parent.classList.contains('au-stagger-leave'))) {
-              var elemPos = Array.prototype.indexOf.call(parent.childNodes, element);
-              delay = _this5._getElementAnimationDelay(parent) * elemPos;
+							resolve(false);
+						}
+					});
+				};
 
-              _this5._triggerDOMEvent(animationEvent.staggerNext, element);
+				CssAnimator.prototype.addClass = function addClass(element, className) {
+					var _this7 = this;
 
-              setTimeout(function () {
-                classList.add('au-leave-active');
-                cleanupAnimation();
-              }, delay);
-            } else {
-              classList.add('au-leave-active');
-              cleanupAnimation();
-            }
-          });
-        };
+					var suppressEvents = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
-        CssAnimator.prototype.removeClass = function removeClass(element, className) {
-          var _this6 = this;
+					return new Promise(function (resolve, reject) {
+						var classList = element.classList;
 
-          var suppressEvents = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+						if (suppressEvents !== true) {
+							_this7._triggerDOMEvent(animationEvent.addClassBegin, element);
+						}
 
-          return new Promise(function (resolve, reject) {
-            var classList = element.classList;
+						var animStart = undefined;
+						var animHasStarted = false;
+						_this7._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
+							animHasStarted = true;
+							_this7.isAnimating = true;
 
-            if (!classList.contains(className) && !classList.contains(className + '-add')) {
-              resolve(false);
-              return;
-            }
+							if (suppressEvents !== true) {
+								_this7._triggerDOMEvent(animationEvent.addClassActive, element);
+							}
 
-            if (suppressEvents !== true) {
-              _this6._triggerDOMEvent(animationEvent.removeClassBegin, element);
-            }
+							evAnimStart.stopPropagation();
 
-            classList.remove(className);
-            var prevAnimationNames = _this6._getElementAnimationNames(element);
+							evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
+						}, false);
 
-            var animStart = undefined;
-            var animHasStarted = false;
-            _this6._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
-              animHasStarted = true;
-              _this6.isAnimating = true;
+						var animEnd = undefined;
+						_this7._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
+							if (!animHasStarted) {
+								return;
+							}
 
-              if (suppressEvents !== true) {
-                _this6._triggerDOMEvent(animationEvent.removeClassActive, element);
-              }
+							evAnimEnd.stopPropagation();
 
-              evAnimStart.stopPropagation();
+							classList.add(className);
 
-              evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
-            }, false);
+							classList.remove(className + '-add');
 
-            var animEnd = undefined;
-            _this6._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
-              if (!animHasStarted) {
-                return;
-              }
+							evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
 
-              evAnimEnd.stopPropagation();
+							_this7.isAnimating = false;
 
-              classList.remove(className + '-remove');
+							if (suppressEvents !== true) {
+								_this7._triggerDOMEvent(animationEvent.addClassDone, element);
+							}
 
-              evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
+							resolve(true);
+						}, false);
 
-              _this6.isAnimating = false;
+						var prevAnimationNames = _this7._getElementAnimationNames(element);
 
-              if (suppressEvents !== true) {
-                _this6._triggerDOMEvent(animationEvent.removeClassDone, element);
-              }
+						classList.add(className + '-add');
 
-              resolve(true);
-            }, false);
+						var animationNames = _this7._getElementAnimationNames(element);
+						if (!_this7._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
+							classList.remove(className + '-add');
+							classList.add(className);
 
-            classList.add(className + '-remove');
+							if (suppressEvents !== true) {
+								_this7._triggerDOMEvent(animationEvent.addClassTimeout, element);
+							}
 
-            var animationNames = _this6._getElementAnimationNames(element);
-            if (!_this6._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
-              classList.remove(className + '-remove');
-              classList.remove(className);
+							resolve(false);
+						}
+					});
+				};
 
-              if (suppressEvents !== true) {
-                _this6._triggerDOMEvent(animationEvent.removeClassTimeout, element);
-              }
+				return CssAnimator;
+			})();
 
-              resolve(false);
-            }
-          });
-        };
-
-        CssAnimator.prototype.addClass = function addClass(element, className) {
-          var _this7 = this;
-
-          var suppressEvents = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-
-          return new Promise(function (resolve, reject) {
-            var classList = element.classList;
-
-            if (suppressEvents !== true) {
-              _this7._triggerDOMEvent(animationEvent.addClassBegin, element);
-            }
-
-            var animStart = undefined;
-            var animHasStarted = false;
-            _this7._addMultipleEventListener(element, 'webkitAnimationStart animationstart', animStart = function (evAnimStart) {
-              animHasStarted = true;
-              _this7.isAnimating = true;
-
-              if (suppressEvents !== true) {
-                _this7._triggerDOMEvent(animationEvent.addClassActive, element);
-              }
-
-              evAnimStart.stopPropagation();
-
-              evAnimStart.target.removeEventListener(evAnimStart.type, animStart);
-            }, false);
-
-            var animEnd = undefined;
-            _this7._addMultipleEventListener(element, 'webkitAnimationEnd animationend', animEnd = function (evAnimEnd) {
-              if (!animHasStarted) {
-                return;
-              }
-
-              evAnimEnd.stopPropagation();
-
-              classList.add(className);
-
-              classList.remove(className + '-add');
-
-              evAnimEnd.target.removeEventListener(evAnimEnd.type, animEnd);
-
-              _this7.isAnimating = false;
-
-              if (suppressEvents !== true) {
-                _this7._triggerDOMEvent(animationEvent.addClassDone, element);
-              }
-
-              resolve(true);
-            }, false);
-
-            var prevAnimationNames = _this7._getElementAnimationNames(element);
-
-            classList.add(className + '-add');
-
-            var animationNames = _this7._getElementAnimationNames(element);
-            if (!_this7._animationChangeWithValidKeyframe(animationNames, prevAnimationNames)) {
-              classList.remove(className + '-add');
-              classList.add(className);
-
-              if (suppressEvents !== true) {
-                _this7._triggerDOMEvent(animationEvent.addClassTimeout, element);
-              }
-
-              resolve(false);
-            }
-          });
-        };
-
-        return CssAnimator;
-      })();
-
-      _export('CssAnimator', CssAnimator);
-    }
-  };
+			_export('CssAnimator', CssAnimator);
+		}
+	};
 });
